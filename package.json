@@ -1,0 +1,21 @@
+{
+  "name": "discord-hub-tek01",
+  "version": "1.0.0",
+  "description": "Projet HUB réalisé en première année de Epitech par Alan, Corentin et Nathan",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "run": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^9.3.0",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "glob": "^10.3.10",
+    "quick.db": "^9.1.7"
+  }
+}
