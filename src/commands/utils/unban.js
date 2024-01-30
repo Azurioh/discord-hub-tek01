@@ -7,9 +7,6 @@ function Unban(interaction, client)
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
         return interaction.reply({ content: "Tu dois avoir les permissions de bannir quelqu'un afin d'utiliser cette commande", ephemeral: true });
     }
-    //if (interaction.member.id === unbanUser) {
-    //    return interaction.reply({ content: "Impossible de te ban toi même", ephemeral: true });
-    //}
     interaction.guild.members.unban(unbanUser).then(() => {
         return interaction.reply({ content: `${interaction.options.getUser('user')} à été débanni`, ephemeral: true });
     }).catch(() => {
@@ -19,7 +16,7 @@ function Unban(interaction, client)
 
 const command = {
     name: "unban",
-    description: "Ban the given user",
+    description: "unban the given user",
     options:[
         {
             name: "user",
