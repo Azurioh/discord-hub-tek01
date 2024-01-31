@@ -14,6 +14,7 @@ function Mute(interaction, client)
     if (!reason) {
         reason = "No reason given";
     }
+    const TextChannel = interaction.guild.channels.cache.filter(ch => ch.type === 0)
     const role = interaction.guild.roles.cache.find(role => role.name === "Mute");
     if (!role){
         interaction.guild.roles.create({
@@ -22,9 +23,12 @@ function Mute(interaction, client)
             permissions: [],
             reason: 'Need of a mute role',
         })
-        //role.setPermissions(0n)
     }
     const myRole = interaction.guild.roles.cache.find(role => role.name === "Mute");
+    TextChannel.forEach(c => {
+        c.permissionOverwrites.create(myRole, {SendMessages: false});
+        
+    })
     interaction.guild.members.cache.get(muteUser).roles.add(myRole).then(() =>{
         return interaction.reply({ content: `${interaction.options.getUser('user')} à été mute`, ephemeral: true });
     }).catch(() => {
@@ -48,7 +52,7 @@ const command = {
             type:3,
         },
     ],
-    default_member_permissions: 268435456,
+    default_member_permissions: 8,
     run: (interaction, client) => Mute(interaction, client)
 }
 
