@@ -27,7 +27,6 @@ function Mute(interaction, client)
     const myRole = interaction.guild.roles.cache.find(role => role.name === "Mute");
     TextChannel.forEach(c => {
         c.permissionOverwrites.create(myRole, {SendMessages: false});
-        
     })
     interaction.guild.members.cache.get(muteUser).roles.add(myRole).then(() =>{
         return interaction.reply({ content: `${interaction.options.getUser('user')} à été mute`, ephemeral: true });
