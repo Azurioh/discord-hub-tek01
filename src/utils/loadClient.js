@@ -1,5 +1,6 @@
-import { Client, Collection, Partials, IntentsBitField } from "discord.js";
+import { Client, Collection, Partials, IntentsBitField, EmbedBuilder } from "discord.js";
 import { glob } from "glob";
+import { DisTube } from "distube";
 
 async function loadCommands(client) {
     const commands = await glob(`${process.cwd()}/src/commands/*/*.js`);
@@ -76,6 +77,62 @@ async function loadElements(client) {
     return true;
 }
 
+function loadDistube(client)
+{
+    client.distube = new DisTube(client, {
+        emitNewSongOnly: true,
+        leaveOnFinish: true,
+        emitAddSongWhenCreatingQueue: false,
+    });
+}
+
+function DistubeEvents(client)
+{
+    const embed = new EmbedBuilder();
+
+    client.distube.on("playSong", (queue, song) => {
+        embed.setColor(0x00FF00);
+        embed.setDescription(`Nouveau son: ${song.name} - \`${song.formattedDuration}\`\nAjouté à la queue par: ${song.user}`);
+        queue.textChannel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("addSong", (queue, song) => {
+        embed.setColor(0x00FF00);
+        embed.setDescription(`Ajout du son: ${song.name} - \`${song.formattedDuration}\` à la file d'attente\nAjouté à la queue par: ${song.user}`);
+        queue.textChannel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("addList", (queue, playlist) => {
+        embed.setColor(0x00FF00);
+        embed.setDescription(`Ajout de la playlist: \`${playlist.name}\`\n ${playlist.songs.length} ont été ajoutés`);
+        queue.textChannel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("error", (channel, e) => {
+        embed.setColor(0xFF0000);
+        embed.setDescription(`Une erreur est survenue: ${e}`);
+        channel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("empty", channel => {
+        embed.setColor(0xFF0000);
+        embed.setDescription("Le vocal est actuellement vide, je quitte le channel");
+        channel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("searchNoResult", message => {
+        embed.setColor(0xFF0000);
+        embed.setDescription("Aucun résultat trouvé");
+        message.channel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("finish", queue => {
+        embed.setColor(0xFF0000);
+        embed.setDescription("Plus aucune musique dans la file d'attente, je quitte le channel");
+        queue.textChannel.send({ embeds: [embed] });
+    });
+}
+
 function loadClient() {
     const client = new Client({
         intents: [new IntentsBitField(3276799)],
@@ -85,6 +142,8 @@ function loadClient() {
     if (loadElements(client) === false) {
         return null;
     }
+    loadDistube(client);
+    DistubeEvents(client);
     client.config = process.env;
     return client;
 }
