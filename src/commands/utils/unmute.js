@@ -16,7 +16,6 @@ function Unmute(interaction, client)
     }
     const myRole = interaction.guild.roles.cache.find(role => role.name === "Mute");
     interaction.guild.members.cache.get(unmuteUser.id).roles.remove(myRole).then(() =>{
-        // interaction.guild.role.delete(myRole, "proit");
         return interaction.reply({ content: `${interaction.options.getUser('user')} à été unmute`, ephemeral: true });
     }).catch(() => {
         return interaction.reply({ content: `Impossible de unmute ${interaction.options.getUser('user')}`, ephemeral: true });
