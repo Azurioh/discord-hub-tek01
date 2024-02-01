@@ -45,11 +45,13 @@ const command = {
             name: "raison",
             description: "La raison du tempban",
             type:3,
+            required: true,
         },
         {
             name: "time",
             description: "La durée du tempban",
             type:4,
+            required: true,
         },
     ],
     default_member_permissions: 8,
