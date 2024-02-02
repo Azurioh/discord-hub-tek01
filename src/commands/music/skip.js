@@ -7,8 +7,21 @@ async function Skip(interaction, client)
         interaction.reply({ content: "Il n'y a aucune musique dans la file actuellement", ephemeral: true });
         return;
     }
-    await queue.skip(userVoiceChannel);
-    interaction.reply({ content: "La musique a bien été skip" });
+    try {
+        await queue.skip(userVoiceChannel);
+        interaction.reply({ content: "La musique a bien été skip" });
+    } catch (err) {
+        switch (err.code) {
+            case 'NO_UP_NEXT':
+                queue.stop(userVoiceChannel);
+                interaction.reply({ content: "Impossible de skip la musique, la file d'attente est vide" });
+                return;
+            default:
+                console.error(err);
+                interaction.reply({ content: "Impossible de skip la musique" });
+                return;
+        }
+    }
     return;
 }
 

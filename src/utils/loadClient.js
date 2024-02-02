@@ -115,10 +115,21 @@ function DistubeEvents(client)
         return;
     });
     client.distube.on("empty", channel => {
-        embed.setColor(0xFF0000);
-        embed.setDescription("Le vocal est actuellement vide, je quitte le channel");
-        channel.send({ embeds: [embed] });
-        return;
+        const queue = client.distube.getQueue(channel.guild);
+        setTimeout(async () => {
+            if (!queue.textChannel.guild.me.voice.channelId) {
+                clearTimeout();
+                return;
+            }
+            if (queue != undefined && queue.playing) {
+                clearTimeout();
+                return;
+            }
+            embed.setColor(0xFF0000);
+            embed.setDescription("Le vocal est actuellement vide, je quitte le channel");
+            channel.send({ embeds: [embed] });
+            return;
+        }, 1000 * 10);
     });
     client.distube.on("searchNoResult", message => {
         embed.setColor(0xFF0000);
