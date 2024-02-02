@@ -116,6 +116,18 @@ function DistubeEvents(client)
     });
     client.distube.on("empty", channel => {
         const queue = client.distube.getQueue(channel.guild);
+        embed.setColor(0xFF0000);
+        embed.setDescription("Le vocal est actuellement vide, je quitte le channel");
+        channel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("searchNoResult", message => {
+        embed.setColor(0xFF0000);
+        embed.setDescription("Aucun résultat trouvé");
+        message.channel.send({ embeds: [embed] });
+        return;
+    });
+    client.distube.on("finish", queue => {
         setTimeout(async () => {
             if (!queue.textChannel.guild.me.voice.channelId) {
                 clearTimeout();
@@ -126,21 +138,10 @@ function DistubeEvents(client)
                 return;
             }
             embed.setColor(0xFF0000);
-            embed.setDescription("Le vocal est actuellement vide, je quitte le channel");
-            channel.send({ embeds: [embed] });
+            embed.setDescription("Plus aucune musique dans la file d'attente, je quitte le channel");
+            queue.textChannel.send({ embeds: [embed] });
             return;
         }, 1000 * 10);
-    });
-    client.distube.on("searchNoResult", message => {
-        embed.setColor(0xFF0000);
-        embed.setDescription("Aucun résultat trouvé");
-        message.channel.send({ embeds: [embed] });
-        return;
-    });
-    client.distube.on("finish", queue => {
-        embed.setColor(0xFF0000);
-        embed.setDescription("Plus aucune musique dans la file d'attente, je quitte le channel");
-        queue.textChannel.send({ embeds: [embed] });
     });
 }
 
