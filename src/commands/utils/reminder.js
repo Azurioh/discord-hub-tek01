@@ -1,20 +1,34 @@
 import { PermissionsBitField } from 'discord.js';
 import { QuickDB } from 'quick.db';
 
-function Remind(interaction, client)
-{
+async function Remind(interaction, client) {
     const userId = interaction.user.id;
-    const message = interaction.options.getString('message');
+    const user = await client.users.fetch(userId);
+
+    const messageContent = interaction.options.getString('message');
     const day = interaction.options.getInteger('day') || 0;
     const hours = interaction.options.getInteger('hours') || 0;
     const minutes = interaction.options.getInteger('minutes') || 0;
-    let db = new QuickDB();
-    const duration = (day * 60 * 60 * 24) + (hours * 60 * 60) + (minutes * 60);
 
-    const endTime = Date.now() + duration * 1000;
-    db.set(`timer_${userId}`, endTime);
-    db.set(`message_${userId}`, message);
-    interaction.reply(`The timer has been set for ${duration} seconds. It will expire at ${new Date(endTime).toLocaleTimeString()}.`);
+    const durationInSeconds = (day * 60 * 60 * 24) + (hours * 60 * 60) + (minutes * 60);
+
+    let db = new QuickDB();
+    let reminders = db.get(`reminders_${userId}`) || [];
+
+    if (!Array.isArray(reminders)) {
+        reminders = [];
+    }
+
+    const endTime = Date.now() + durationInSeconds * 1000;
+
+    reminders.push({ endTime, message: messageContent });
+    db.set(`reminders_${userId}`, reminders);
+
+    setTimeout(() => {
+        user.send(`Reminder: ${messageContent}`).catch(console.error);
+    }, durationInSeconds * 1000);
+
+    interaction.reply(`The timer has been set for ${durationInSeconds} seconds. It will expire at ${new Date(endTime).toLocaleTimeString()}.`);
 }
 
 const command = {
