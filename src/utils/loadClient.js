@@ -115,7 +115,6 @@ function DistubeEvents(client)
         return;
     });
     client.distube.on("empty", channel => {
-        const queue = client.distube.getQueue(channel.guild);
         embed.setColor(0xFF0000);
         embed.setDescription("Le vocal est actuellement vide, je quitte le channel");
         channel.send({ embeds: [embed] });
@@ -128,6 +127,7 @@ function DistubeEvents(client)
         return;
     });
     client.distube.on("finish", queue => {
+        const queue = client.distube.getQueue(channel.guild);
         setTimeout(async () => {
             if (!queue.textChannel.guild.me.voice.channelId) {
                 clearTimeout();
